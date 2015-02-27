@@ -3,21 +3,35 @@
 class BaseController extends Controller
 {
 
+    protected static $is_api;
     protected static $validation;
 
     public function __construct()
     {
+        parent::__construct();
         self::$validation = new Validation();
         self::setValidationRules();
-        parent::__construct();
+        self::$is_api = (!empty($_GET["api"]) && $_GET["api"] == API_KEY);
+        self::set('server_info', BaseModel::getServerInfo());
     }
 
+    public function before()
+    {
+    }
+
+    public function after()
+    {
+        (self::$is_api) ? JsonApi::output() : $this->render();
+    }
+
+
+    /**
+     * 共通で使用するバリデーションルールを定義
+     */
     protected static function setValidationRules()
     {
-        /*
-         * 共通で使用するバリデーションルールはここに定義してください
-         */
 
+        /** バリデーションルール */
         self::$validation->add('page', 'ページ')
             ->addRule('required')
             ->addRule('min_length', 1)

@@ -70,7 +70,7 @@ class Validation
         return $this;
     }
 
-    public static function run($params)
+    static public function run($params)
     {
 
         self::$rule_set = array_values(self::$rule_set);
@@ -100,52 +100,52 @@ class Validation
         return (empty(self::$errors));
     }
 
-    public static function showErrors()
+    static public function showErrors()
     {
         return self::$errors;
     }
 
-    public static function validationEmpty($val)
+    static public function validationEmpty($val)
     {
         return ($val === false or $val === null or $val === '' or $val === array());
     }
 
-    public static function validationRequireForm($input)
+    static public function validationRequireForm($input)
     {
         return !self::validationEmpty($input);
     }
 
-    public static function validationMinLength($input, $rule)
+    static public function validationMinLength($input, $rule)
     {
         return mb_strlen($input) >= $rule;
     }
 
-    public static function validationMaxLength($input, $rule)
+    static public function validationMaxLength($input, $rule)
     {
         return mb_strlen($input) <= $rule;
     }
 
-    public static function validationExactLength($input, $rule)
+    static public function validationExactLength($input, $rule)
     {
         return mb_strlen($input) == $rule;
     }
 
-    public static function validationMatchValue($input, $rule, $strict = false)
+    static public function validationMatchValue($input, $rule, $strict = false)
     {
         return ($input === $input || (!$strict && $input == $input));
     }
 
-    public static function validationMatchPattern($input, $rule)
+    static public function validationMatchPattern($input, $rule)
     {
         return preg_match($rule, $input) > 0;
     }
 
-    public static function validationValidEmail($input)
+    static public function validationValidEmail($input)
     {
         return filter_var($input, FILTER_VALIDATE_EMAIL);
     }
 
-    public static function validationValidEmails($input, $separator = ',')
+    static public function validationValidEmails($input, $separator = ',')
     {
         $emails = explode($separator, $input);
 
@@ -158,27 +158,27 @@ class Validation
         return true;
     }
 
-    public static function validationValidUrl($input)
+    static public function validationValidUrl($input)
     {
         return filter_var($input, FILTER_VALIDATE_URL);
     }
 
-    public static function validationValidIp($input)
+    static public function validationValidIp($input)
     {
         return filter_var($input, FILTER_VALIDATE_IP);
     }
 
-    public static function validationNumericMin($input, $rule)
+    static public function validationNumericMin($input, $rule)
     {
         return $input >= $rule;
     }
 
-    public static function validationNumericMax($input, $rule)
+    static public function validationNumericMax($input, $rule)
     {
         return $input <= $rule;
     }
 
-    public static function validationValidString($input, $rule_list = ['alpha', 'utf8'])
+    static public function validationValidString($input, $rule_list = ['alpha', 'utf8'])
     {
         if (!is_array($rule_list)) {
             if ($rule_list == 'alpha') {

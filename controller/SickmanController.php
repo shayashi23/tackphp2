@@ -1,41 +1,44 @@
 <?php
 
-// バリデーションテスト用
+// バリデーションテスト
 class SickmanController extends BaseController
 {
     public function __construct()
     {
         parent::__construct();
+        self::setValidationRules();
+
+        // GETパラメータに対し、バリデーションを実行
+        $v_errors = self::execValidation(Request::getParams("GET"));
+        if (!empty($v_errors)) $this->error($v_errors);
+
     }
 
     public function index($message = "Hello")
     {
-
-        $validation_errors = self::execValidation(Request::getParams("GET"));
-        if (!empty($validation_errors)) {
-            $this->error($validation_errors);
-        }
-
-        $this->render();
-
+        self::set('article_list', [1,2,3]);
     }
 
-    // 特定のコントローラだけで使うバリデーションルールは分けて定義できる
+    /**
+     * コントローラ固有のバリデーションルールを定義
+     */
     protected static function setValidationRules()
     {
 
+        /**
+         * 親コントローラの定義を継承
+         * （同じルールを再定義した場合、ルールは上書きされます）
+         */
         parent::setValidationRules();
 
-        /* バリデーションルールはこちらに追加してください */
-
+        /** バリデーションルール */
         self::$validation->add('page', 'ページ')
             ->addRule('required_param')
             ->addRule('required_form')
             ->addRule('valid_string', ['numeric']);
 
-        self::$validation->add('email', 'メールアドレス')
-            ->addRule('valid_email');
+        self::$validation->add('api', 'APIキー')
+            ->addRule('valid_string', ['alpha', 'numeric']);
 
     }
-
 }

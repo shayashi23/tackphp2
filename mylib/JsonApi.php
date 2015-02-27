@@ -4,6 +4,12 @@ class JsonApi
 {
     protected static $list = array();
 
+    public static function output()
+    {
+        echo self::get();
+        exit;
+    }
+
     public static function encode($data)
     {
         return json_encode($data);
