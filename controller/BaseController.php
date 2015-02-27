@@ -3,44 +3,44 @@
 class BaseController extends Controller
 {
 
-    protected $validation;
+    protected static $validation;
 
     public function __construct()
     {
-        $this->validation = new Validation();
-        $this->_setValidationRules();
+        self::$validation = new Validation();
+        self::setValidationRules();
         parent::__construct();
     }
 
-    protected function _setValidationRules()
+    protected static function setValidationRules()
     {
         /*
          * 共通で使用するバリデーションルールはここに定義してください
          */
 
-        $this->validation->add('page', 'ページ')
+        self::$validation->add('page', 'ページ')
             ->addRule('required')
             ->addRule('min_length', 1)
             ->addRule('max_length', 3)
             ->addRule('valid_string', ['numeric']);
 
-        $this->validation->add('limit', '表示件数')
+        self::$validation->add('limit', '表示件数')
             ->addRule('required')
             ->addRule('numeric_min', 1)
             ->addRule('numeric_max', 100)
             ->addRule('valid_string', ['numeric']);
 
-        $this->validation->add('ip', 'IPアドレス')
+        self::$validation->add('ip', 'IPアドレス')
             ->addRule('required_param')
             ->addRule('valid_ip');
-        $this->validation->add('url', 'URL')
+        self::$validation->add('url', 'URL')
             ->addRule('valid_url');
 
     }
 
     protected function execValidation($params)
     {
-        $error_messages = (!$this->validation->run($params)) ? $this->validation->showErrors() : null;
+        $error_messages = (!self::$validation->run($params)) ? self::$validation->showErrors() : null;
         if (empty($error_messages)) {
             return false;
         }
