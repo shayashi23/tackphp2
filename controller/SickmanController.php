@@ -3,26 +3,41 @@
 // バリデーションテスト
 class SickmanController extends BaseController
 {
+
+    protected $validation2;
+
     public function __construct()
     {
         parent::__construct();
-        self::setValidationRules();
+        $this->setValidationRules();
 
         // GETパラメータに対し、バリデーションを実行
-        $v_errors = self::execValidation(Request::getParams("GET"));
-        if (!empty($v_errors)) $this->error($v_errors);
+        $this->validation_errors = $this->runValidation($this->validation, Request::getParams("GET"));
+        if (!empty($this->validation_errors)) $this->error($this->validation_errors);
 
     }
 
     public function index($message = "Hello")
     {
+
+        /*
+        $this->validation2 = new Validation();
+        $this->validation2->add('page2', 'ページ2')
+            ->addRule('required_param')
+            ->addRule('required_form')
+            ->addRule('valid_string', ['numeric']);
+        $v_errors = $this->runValidation($this->validation2, ['page2'=>'aあ']);
+        if (!empty($v_errors)) $this->error($v_errors);
+        */
+
         self::set('article_list', [1,2,3]);
+
     }
 
     /**
      * コントローラ固有のバリデーションルールを定義
      */
-    protected static function setValidationRules()
+    protected function setValidationRules()
     {
 
         /**
@@ -32,12 +47,12 @@ class SickmanController extends BaseController
         parent::setValidationRules();
 
         /** バリデーションルール */
-        self::$validation->add('page', 'ページ')
+        $this->validation->add('page', 'ページ')
             ->addRule('required_param')
             ->addRule('required_form')
             ->addRule('valid_string', ['numeric']);
 
-        self::$validation->add('api', 'APIキー')
+        $this->validation->add('api', 'APIキー')
             ->addRule('valid_string', ['alpha', 'numeric']);
 
     }

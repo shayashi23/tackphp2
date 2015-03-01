@@ -3,9 +3,9 @@
 class Validation
 {
 
-    protected static $rule_set = [];
-    protected static $add_count = -1;
-    protected static $errors = [];
+    protected $rule_set = [];
+    protected $add_count = -1;
+    protected $errors = [];
     protected static $replace_tags = [':field', ':label', ':value', ':rule'];
     protected static $missing_error_message = '該当するエラーメッセージが存在しません。';
     protected static $error_messages = [
@@ -46,40 +46,40 @@ class Validation
 
     public function add($name, $label = '')
     {
-        self::$add_count++;
+        $this->add_count++;
 
         // 継承先でルールの上書きがあれば、古いルールを削除
-        if (!empty(self::$rule_set) && is_array(self::$rule_set)) {
-            foreach (self::$rule_set as $k => $v) {
+        if (!empty($this->rule_set) && is_array($this->rule_set)) {
+            foreach ($this->rule_set as $k => $v) {
                 if ($v["name"] == $name) {
-                    unset(self::$rule_set[$k]);
+                    unset($this->rule_set[$k]);
                 }
             }
         }
 
-        self::$rule_set[self::$add_count]['name'] = $name;
-        self::$rule_set[self::$add_count]['label'] = $label;
+        $this->rule_set[$this->add_count]['name'] = $name;
+        $this->rule_set[$this->add_count]['label'] = $label;
 
         return $this;
     }
 
     public function addRule($key, $val = null)
     {
-        self::$rule_set[self::$add_count]["rules"][] = [$key, $val];
+        $this->rule_set[$this->add_count]["rules"][] = [$key, $val];
 
         return $this;
     }
 
-    static public function run($params)
+    public function run($params)
     {
 
-        self::$rule_set = array_values(self::$rule_set);
+        $this->rule_set = array_values($this->rule_set);
 
-        foreach (self::$rule_set as $k => $v) {
+        foreach ($this->rule_set as $k => $v) {
             $is_find = false;
             foreach ($params as $k2 => $v2) {
                 if ($k2 === $v["name"]) {
-                    self::checkValidation($k2, $v["rules"], $v["label"], $v2);
+                    $this->checkValidation($k2, $v["rules"], $v["label"], $v2);
                     $is_find = true;
                     break;
                 }
@@ -91,18 +91,18 @@ class Validation
             }
             foreach ($v["rules"] as $rule_data) {
                 if ($rule_data[0] == 'required_param') {
-                    self::setError($rule_data[0], $v["name"]);
+                    $this->setError($rule_data[0], $v["name"]);
                     break;
                 }
             }
         }
 
-        return (empty(self::$errors));
+        return (empty($this->errors));
     }
 
-    static public function showErrors()
+    public function showErrors()
     {
-        return self::$errors;
+        return $this->errors;
     }
 
     static public function validationEmpty($val)
@@ -247,79 +247,79 @@ class Validation
      * protected
      */
 
-    protected static function checkValidation($name, $rule_list, $rule_label, $input_val = [])
+    protected function checkValidation($name, $rule_list, $rule_label, $input_val = [])
     {
         foreach ($rule_list as $rule_data) {
-            self::filterRule($rule_data[0], $rule_data[1], $rule_label, $input_val);
+            $this->filterRule($rule_data[0], $rule_data[1], $rule_label, $input_val);
         }
     }
 
-    protected static function filterRule($rule_name, $rule_val, $rule_label, $input_val)
+    protected function filterRule($rule_name, $rule_val, $rule_label, $input_val)
     {
         switch ($rule_name) {
             case 'required_form':
                 if (!self::validationRequireForm($input_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'min_length':
                 if (!self::validationMinLength($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'max_length':
                 if (!self::validationMaxLength($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'exact_length':
                 if (!self::validationExactLength($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'match_value':
                 if (!self::validationExactLength($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'match_pattern':
                 if (!self::validationExactLength($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'valid_email':
                 if (!self::validationValidEmail($input_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'valid_emails':
                 if (!self::validationValidEmails($input_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'valid_url':
                 if (!self::validationValidUrl($input_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'valid_ip':
                 if (!self::validationValidIp($input_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'numeric_min':
                 if (!self::validationNumericMin($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'numeric_max':
                 if (!self::validationNumericMax($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             case 'valid_string':
                 if (!self::validationValidString($input_val, $rule_val)) {
-                    self::setError($rule_name, $rule_label, $rule_val);
+                    $this->setError($rule_name, $rule_label, $rule_val);
                 }
                 break;
             default:
@@ -327,11 +327,11 @@ class Validation
         }
     }
 
-    protected static function setError($rule_name, $rule_label, $rule_val = null)
+    protected function setError($rule_name, $rule_label, $rule_val = null)
     {
 
         if (self::validationEmpty(self::$error_messages[$rule_name])) {
-            self::$errors[] = self::$missing_error_message;
+            $this->errors[] = self::$missing_error_message;
         } else {
             $error_message = self::$error_messages[$rule_name];
             $error_message = str_replace(':label', $rule_label, $error_message);
@@ -346,7 +346,7 @@ class Validation
             foreach (self::$replace_words as $k => $v) {
                 $error_message = str_replace($k, $v, $error_message);
             }
-            self::$errors[] = $error_message;
+            $this->errors[] = $error_message;
         }
     }
 }
