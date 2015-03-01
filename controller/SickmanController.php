@@ -1,33 +1,57 @@
 <?php
 
-// バリデーションテスト用
-class SickmanController extends BaseController{
-    public function __construct(){
+// バリデーションテスト
+class SickmanController extends BaseController
+{
+
+    protected $validation2;
+
+    public function __construct()
+    {
         parent::__construct();
+        $this->setValidationRules();
+
+        // GETパラメータに対し、バリデーションを実行
+        $this->validation_errors = $this->runValidation($this->validation, Request::getParams("GET"));
+        if (!empty($this->validation_errors)) $this->error($this->validation_errors);
+
     }
-    public function index($message="Hello"){
 
-        $validation_errors = $this::_exec_validation(Request::getParams("GET"));
-        if(!empty($validation_errors)) $this->error($validation_errors);
-
-        $this->render();
-    }
-
-    // 特定のコントローラだけで使うバリデーションルールは分けて定義できる
-    protected function _set_validation_rules()
+    public function index($message = "Hello")
     {
 
-        parent::_set_validation_rules();
+        $this->validation2 = new Validation();
+        $this->validation2->add('page2', 'ページ2')
+            ->addRule('required_param')
+            ->addRule('required_form')
+            ->addRule('valid_string', ['numeric']);
+        $v_errors = $this->runValidation($this->validation2, ['page2'=>'2']);
+        if (!empty($v_errors)) $this->error($v_errors);
 
-        /* バリデーションルールはこちらに追加してください */
+        $this->render();
 
-        $this->validation->add('page', 'ページ')
-            ->add_rule('required_param')
-            ->add_rule('required_form')
-            ->add_rule('valid_string', ['numeric']);
-
-        $this->validation->add('email', 'メールアドレス')
-            ->add_rule('valid_email');
     }
 
+    /**
+     * コントローラ固有のバリデーションルールを定義
+     */
+    protected function setValidationRules()
+    {
+
+        /**
+         * 親コントローラの定義を継承
+         * （同じルールを再定義した場合、ルールは上書きされます）
+         */
+        parent::setValidationRules();
+
+        /** バリデーションルール */
+        $this->validation->add('page', 'ページ')
+            ->addRule('required_param')
+            ->addRule('required_form')
+            ->addRule('valid_string', ['numeric']);
+
+        $this->validation->add('api', 'APIキー')
+            ->addRule('valid_string', ['alpha', 'numeric']);
+
+    }
 }
